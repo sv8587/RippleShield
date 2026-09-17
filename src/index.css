@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    background-color: #070B12;
+    color: #F8FAFC;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+  
+  code, pre, .font-mono {
+    font-family: 'Fira Code', ui-monospace, SFMono-Regular, monospace;
+  }
+
+  .font-display {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+  }
+}
+
+/* Custom cyber scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0B111A;
+}
+::-webkit-scrollbar-thumb {
+  background: #263244;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3B82F6;
+}
+
+/* Grid overlay */
+.cyber-grid {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(38, 50, 68, 0.25) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(38, 50, 68, 0.25) 1px, transparent 1px);
+}
+
+.radar-sweep {
+  animation: sweep 8s linear infinite;
+}
+
+@keyframes sweep {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes ripple-wave {
+  0% {
+    r: 12px;
+    opacity: 0.9;
+    stroke-width: 3px;
+  }
+  100% {
+    r: 58px;
+    opacity: 0;
+    stroke-width: 1px;
+  }
+}
+
+.animate-ripple {
+  animation: ripple-wave 2s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+}
+
