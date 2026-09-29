@@ -201,7 +201,7 @@ This allows security teams to compare scenarios before implementing changes.
 
 RippleShield compares candidate remediation actions instead of simply producing a list of vulnerabilities.
 
-Example:
+ For Example:
 
 | Intervention | Changes Required | Services Protected | Risk Before | Risk After | Estimated Reduction |
 |---|---:|---:|---:|---:|---:|
