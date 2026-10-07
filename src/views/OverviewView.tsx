@@ -1,23 +1,21 @@
 import React from 'react';
-import { 
-  GraphNode, 
-  GraphLink, 
-  EcosystemStats 
+import {
+  GraphNode,
+  GraphLink,
+  EcosystemStats
 } from '../types';
 import { DependencyGraph } from '../components/graph/DependencyGraph';
-import { 
-  Layers, 
-  ShieldAlert, 
-  Server, 
-  Radio, 
-  TrendingDown, 
-  TrendingUp, 
-  Activity, 
-  ArrowUpRight, 
+import {
+  Layers,
+  ShieldAlert,
+  Server,
+  Radio,
+  TrendingDown,
+  Activity,
+  ArrowUpRight,
   Zap,
   Lock,
-  ChevronRight,
-  GitFork
+  ChevronRight
 } from 'lucide-react';
 import { RiskBadge } from '../components/common/RiskBadge';
 
@@ -110,23 +108,23 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
   ];
 
   return (
-    <div className="space-y-6 pb-8">
+    <div className="space-y-4 sm:space-y-6 pb-8">
       {/* Top Banner: Problem Statement & Value Proposition */}
-      <div className="p-4 rounded-lg bg-[#111925] border border-[#263244] flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded bg-blue-500/10 border border-blue-500/30 text-cyan-400">
+      <div className="p-3.5 sm:p-4 rounded-lg bg-[#111925] border border-[#263244] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+        <div className="flex items-start sm:items-center gap-3">
+          <div className="p-2 rounded bg-blue-500/10 border border-blue-500/30 text-cyan-400 shrink-0 mt-0.5 sm:mt-0">
             <Lock className="w-5 h-5" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-mono font-bold tracking-wider text-cyan-400">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+              <span className="text-[11px] sm:text-xs font-mono font-bold tracking-wider text-cyan-400">
                 PARADIGM SHIFT: CONSEQUENCE-AWARE
               </span>
-              <span className="px-1.5 py-0.5 rounded bg-blue-950 text-[10px] font-mono text-blue-300 border border-blue-800">
+              <span className="px-1.5 py-0.5 rounded bg-blue-950 text-[9px] sm:text-[10px] font-mono text-blue-300 border border-blue-800">
                 MAP → ASSESS → SIMULATE → PRIORITIZE → MITIGATE
               </span>
             </div>
-            <p className="text-xs text-slate-300 mt-1">
+            <p className="text-xs text-slate-300 mt-1 leading-relaxed">
               Traditional tools ask: <span className="text-slate-400 italic">"Which dependency is vulnerable?"</span>{' '}
               <strong className="text-slate-100">RippleShield asks:</strong>{' '}
               <span className="text-cyan-300 font-semibold">"What happens if it fails? How large is the downstream blast radius?"</span>
@@ -134,10 +132,10 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="w-full sm:w-auto flex items-center justify-end">
           <button
             onClick={() => onNavigateToSimulator('dep-follow-redirects')}
-            className="px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-white text-xs font-mono font-semibold transition-colors flex items-center gap-1.5 shadow-md shadow-blue-600/20"
+            className="w-full sm:w-auto justify-center px-3 py-2 sm:py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-white text-xs font-mono font-semibold transition-colors flex items-center gap-1.5 shadow-md shadow-blue-600/20"
           >
             <Activity className="w-3.5 h-3.5" />
             Launch Ripple Simulation
@@ -145,41 +143,41 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
         </div>
       </div>
 
-      {/* KPI Cards Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3.5">
+      {/* KPI Cards Grid: 2 columns on mobile, 3 on tablet, 6 on desktop */}
+      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-2.5 sm:gap-3.5">
         {kpis.map((kpi) => {
           const Icon = kpi.icon;
           return (
             <div
               key={kpi.label}
-              className="p-4 rounded-lg bg-[#111925] border border-[#263244] hover:border-slate-600 transition-colors flex flex-col justify-between"
+              className="p-3 sm:p-4 rounded-lg bg-[#111925] border border-[#263244] hover:border-slate-600 transition-colors flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between text-slate-400 mb-1.5">
-                  <span className="text-[10px] font-mono tracking-wider uppercase font-semibold">
+                  <span className="text-[9px] sm:text-[10px] font-mono tracking-wider uppercase font-semibold truncate">
                     {kpi.label}
                   </span>
-                  <div className={`p-1.5 rounded ${kpi.bg} ${kpi.color}`}>
-                    <Icon className="w-3.5 h-3.5" />
+                  <div className={`p-1 sm:p-1.5 rounded ${kpi.bg} ${kpi.color} shrink-0`}>
+                    <Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                   </div>
                 </div>
-                <div className="text-2xl font-bold font-mono text-slate-100 tracking-tight">
+                <div className="text-xl sm:text-2xl font-bold font-mono text-slate-100 tracking-tight">
                   {kpi.value}
                 </div>
               </div>
 
-              <div className="mt-3 pt-2 border-t border-[#263244]/60">
-                <p className="text-[11px] font-mono text-slate-400 flex items-center gap-1 leading-tight">
+              <div className="mt-2.5 sm:mt-3 pt-2 border-t border-[#263244]/60">
+                <p className="text-[10px] sm:text-[11px] font-mono text-slate-400 flex items-center gap-1 leading-tight truncate">
                   {kpi.trendPositive ? (
-                    <TrendingDown className="w-3 h-3 text-emerald-400 inline" />
+                    <TrendingDown className="w-3 h-3 text-emerald-400 inline shrink-0" />
                   ) : (
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block shrink-0" />
                   )}
-                  <span className={kpi.trendPositive ? 'text-emerald-400' : 'text-slate-300'}>
+                  <span className={`truncate ${kpi.trendPositive ? 'text-emerald-400' : 'text-slate-300'}`}>
                     {kpi.trend}
                   </span>
                 </p>
-                <span className="text-[9.5px] text-slate-500 block mt-0.5">
+                <span className="text-[9px] sm:text-[9.5px] text-slate-500 block mt-0.5 truncate">
                   {kpi.subtext}
                 </span>
               </div>
@@ -190,18 +188,18 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
 
       {/* Main Centerpiece Visualization: Dependency Ecosystem Graph */}
       <div className="space-y-2">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2">
           <div>
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-100 font-display flex items-center gap-2">
+            <h2 className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-slate-100 font-display flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
               DEPENDENCY ECOSYSTEM
             </h2>
-            <p className="text-xs text-slate-400">
-              Interactive topological network. Node size indicates downstream blast radius; border color encodes consequence severity.
+            <p className="text-[11px] sm:text-xs text-slate-400">
+              Interactive topological network. Node size indicates downstream blast radius.
             </p>
           </div>
-          <div className="flex items-center gap-2 text-xs font-mono">
-            <span className="text-slate-400">Showing 184 packages across 5 tiers</span>
+          <div className="flex items-center gap-2 text-[10px] sm:text-xs font-mono text-slate-400">
+            <span>Showing 184 packages across 5 tiers</span>
           </div>
         </div>
 
@@ -210,13 +208,13 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
           nodes={nodes}
           links={links}
           onSelectNode={onSelectNode}
-          height={560}
+          height={typeof window !== 'undefined' && window.innerWidth < 640 ? 400 : 560}
           showControls={true}
         />
       </div>
 
       {/* Bottom Row: Critical Hotspots & Quick Simulator Callouts */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4">
         {/* Hotspot 1: follow-redirects alert */}
         <div className="p-4 rounded-lg bg-[#111925] border border-red-500/30 flex flex-col justify-between">
           <div>

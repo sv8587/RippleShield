@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
-import { 
-  Search, 
-  Bell, 
-  RefreshCw, 
-  UploadCloud, 
-  Check, 
-  Clock, 
-  ShieldAlert, 
+import {
+  Search,
+  Bell,
+  RefreshCw,
+  UploadCloud,
+  Clock,
   AlertTriangle,
-  ChevronDown
+  Menu
 } from 'lucide-react';
 import { GraphNode } from '../../types';
 
@@ -18,6 +16,7 @@ interface TopHeaderProps {
   onOpenUploadSBOM: () => void;
   onSelectNodeByName?: (name: string) => void;
   availableNodes?: GraphNode[];
+  onToggleMobileMenu?: () => void;
 }
 
 export const TopHeader: React.FC<TopHeaderProps> = ({
@@ -26,6 +25,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
   onOpenUploadSBOM,
   onSelectNodeByName,
   availableNodes = [],
+  onToggleMobileMenu,
 }) => {
   const [isScanning, setIsScanning] = useState(false);
   const [scanMessage, setScanMessage] = useState('Last scan: 2 min ago');
@@ -47,19 +47,33 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
   );
 
   return (
-    <header className="h-16 bg-[#0B111A] border-b border-[#263244] px-6 flex items-center justify-between z-20 shrink-0 select-none">
-      {/* Left: Page Title & Context */}
-      <div>
-        <h1 className="text-base font-bold text-slate-100 font-display tracking-tight flex items-center gap-2">
-          {title}
-        </h1>
-        <p className="text-xs text-slate-400 font-sans">{subtitle}</p>
+    <header className="h-16 bg-[#0B111A] border-b border-[#263244] px-3 sm:px-6 flex items-center justify-between z-20 shrink-0 select-none">
+      {/* Left: Mobile hamburger + Page Title */}
+      <div className="flex items-center gap-2.5 min-w-0">
+        {onToggleMobileMenu && (
+          <button
+            onClick={onToggleMobileMenu}
+            className="p-1.5 rounded-md text-slate-400 hover:text-white hover:bg-[#151E2B] md:hidden shrink-0"
+            aria-label="Toggle navigation menu"
+          >
+            <Menu className="w-5 h-5 text-cyan-400" />
+          </button>
+        )}
+
+        <div className="min-w-0">
+          <h1 className="text-sm sm:text-base font-bold text-slate-100 font-display tracking-tight truncate">
+            {title}
+          </h1>
+          <p className="hidden sm:block text-xs text-slate-400 font-sans truncate max-w-xs md:max-w-md">
+            {subtitle}
+          </p>
+        </div>
       </div>
 
       {/* Right: Actions, Search, Notifications, User */}
-      <div className="flex items-center gap-3.5">
-        {/* Global Node Quick Search */}
-        <div className="relative">
+      <div className="flex items-center gap-2 sm:gap-3.5 shrink-0">
+        {/* Global Node Quick Search (hidden on mobile/tablet to preserve room) */}
+        <div className="relative hidden lg:block">
           <div className="flex items-center bg-[#111925] border border-[#263244] rounded-md px-2.5 py-1.5 focus-within:border-blue-500 transition-colors">
             <Search className="w-3.5 h-3.5 text-slate-400 mr-2" />
             <input
@@ -103,16 +117,16 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
         {/* Ingest SBOM Button */}
         <button
           onClick={onOpenUploadSBOM}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#111925] hover:bg-[#151E2B] border border-[#263244] text-xs font-mono font-medium text-cyan-300 hover:border-cyan-500/50 transition-colors"
+          className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded bg-[#111925] hover:bg-[#151E2B] border border-[#263244] text-xs font-mono font-medium text-cyan-300 hover:border-cyan-500/50 transition-colors"
           title="Upload Software Bill of Materials (SBOM)"
         >
-          <UploadCloud className="w-3.5 h-3.5 text-cyan-400" />
-          <span>Upload SBOM</span>
+          <UploadCloud className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+          <span className="hidden sm:inline">Upload SBOM</span>
         </button>
 
         {/* Scan Status & Refresh button */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1.5 text-slate-400 text-xs font-mono bg-[#111925] border border-[#263244] px-2.5 py-1.5 rounded">
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="hidden md:flex items-center gap-1.5 text-slate-400 text-xs font-mono bg-[#111925] border border-[#263244] px-2.5 py-1.5 rounded">
             <Clock className="w-3 h-3 text-slate-500" />
             <span className="text-[11px]">{scanMessage}</span>
           </div>
@@ -120,11 +134,11 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
           <button
             onClick={handleRunScan}
             disabled={isScanning}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-xs font-semibold font-mono shadow-sm transition-all"
+            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-xs font-semibold font-mono shadow-sm transition-all"
             title="Execute on-demand dependency supply chain assessment"
           >
-            <RefreshCw className={`w-3 h-3 ${isScanning ? 'animate-spin' : ''}`} />
-            <span>{isScanning ? 'Scanning...' : 'Run Scan'}</span>
+            <RefreshCw className={`w-3.5 h-3.5 ${isScanning ? 'animate-spin' : ''}`} />
+            <span className="hidden sm:inline">{isScanning ? 'Scanning...' : 'Run Scan'}</span>
           </button>
         </div>
 
@@ -132,14 +146,15 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
         <div className="relative">
           <button
             onClick={() => setShowNotifications(!showNotifications)}
-            className="relative p-2 rounded bg-[#111925] hover:bg-[#151E2B] border border-[#263244] text-slate-400 hover:text-slate-200 transition-colors"
+            className="relative p-1.5 sm:p-2 rounded bg-[#111925] hover:bg-[#151E2B] border border-[#263244] text-slate-400 hover:text-slate-200 transition-colors"
+            aria-label="Security alerts"
           >
             <Bell className="w-4 h-4" />
             <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500 ring-2 ring-[#0B111A]" />
           </button>
 
           {showNotifications && (
-            <div className="absolute right-0 mt-2 w-80 bg-[#111925] border border-[#263244] rounded-lg shadow-2xl p-3 z-50 text-xs">
+            <div className="absolute right-0 mt-2 w-72 sm:w-80 bg-[#111925] border border-[#263244] rounded-lg shadow-2xl p-3 z-50 text-xs">
               <div className="flex items-center justify-between pb-2 border-b border-[#263244]">
                 <span className="font-semibold text-slate-200 font-display">Security Alerts (3)</span>
                 <span className="text-[10px] font-mono text-cyan-400 cursor-pointer">Mark read</span>
@@ -168,7 +183,7 @@ export const TopHeader: React.FC<TopHeaderProps> = ({
         </div>
 
         {/* User avatar */}
-        <div className="w-8 h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-mono text-xs font-semibold text-slate-200">
+        <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-mono text-xs font-semibold text-slate-200 shrink-0">
           SA
         </div>
       </div>

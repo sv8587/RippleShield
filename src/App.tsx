@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from 'react';
-import { 
-  MOCK_NODES, 
-  MOCK_LINKS, 
-  ECOSYSTEM_STATS 
+import {
+  MOCK_NODES,
+  MOCK_LINKS,
+  ECOSYSTEM_STATS
 } from './data/mockDataset';
 import { GraphNode, EcosystemStats } from './types';
 import { Sidebar } from './components/layout/Sidebar';
@@ -29,6 +29,7 @@ export default function App() {
   const [explainModalNode, setExplainModalNode] = useState<GraphNode | null>(null);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isDemoGuideOpen, setIsDemoGuideOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Active simulated ecosystem risk (default 92, reducible to 31 in Mitigation Center)
   const [ecosystemRiskScore, setEcosystemRiskScore] = useState<number>(92);
@@ -68,24 +69,29 @@ export default function App() {
     setIsExplainModalOpen(true);
   };
 
-  // Quick navigation to simulator with pre-selected node
-  const handleNavigateToSimulator = (nodeId?: string) => {
-    if (nodeId) {
-      const node = nodes.find((n) => n.id === nodeId);
-      if (node) setSelectedNode(node);
+  // Cross-view shortcuts
+  const handleNavigateToSimulator = (targetNode?: GraphNode) => {
+    if (targetNode) {
+      setSelectedNode(targetNode);
     }
     setActiveView('ripple-simulator');
+    setIsDrawerOpen(false);
   };
 
-  // Quick navigation to mitigation
   const handleNavigateToMitigation = () => {
     setActiveView('mitigation-center');
+    setIsDrawerOpen(false);
   };
 
-  // Handle virtual patch application from Mitigation Center
-  const handleApplyMitigation = (newRiskScore: number) => {
-    setEcosystemRiskScore(newRiskScore);
-    setIsMitigated(newRiskScore < 50);
+  // Handle simulated mitigation trigger
+  const handleApplyMitigation = () => {
+    setIsMitigated(true);
+    setEcosystemRiskScore(31);
+  };
+
+  const handleResetMitigation = () => {
+    setIsMitigated(false);
+    setEcosystemRiskScore(92);
   };
 
   // Ingested SBOM handler
@@ -177,10 +183,12 @@ export default function App() {
         activeView={activeView}
         onNavigate={(view) => setActiveView(view)}
         onOpenDemoGuide={() => setIsDemoGuideOpen(true)}
+        isOpen={isMobileMenuOpen}
+        onClose={() => setIsMobileMenuOpen(false)}
       />
 
       {/* Main App Content Area */}
-      <div className="flex-1 flex flex-col h-full overflow-hidden">
+      <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden">
         {/* Top Header */}
         <TopHeader
           title={currentMeta.title}
@@ -188,10 +196,11 @@ export default function App() {
           onOpenUploadSBOM={() => setIsUploadModalOpen(true)}
           onSelectNodeByName={handleSelectNodeByName}
           availableNodes={nodes}
+          onToggleMobileMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         />
 
         {/* Dynamic View Scroll Area */}
-        <main className="flex-1 overflow-y-auto px-6 py-5 cyber-scrollbar">
+        <main className="flex-1 overflow-y-auto px-3 sm:px-6 py-3 sm:py-5 cyber-scrollbar">
           {activeView === 'overview' && (
             <OverviewView
               stats={currentStats}
@@ -221,31 +230,39 @@ export default function App() {
               nodes={nodes}
               onSelectNode={handleSelectNode}
               onSimulate={handleNavigateToSimulator}
-              onMitigate={() => setActiveView('mitigation-center')}
-              onExplainRisk={handleOpenExplainRisk}
             />
           )}
 
           {activeView === 'ripple-simulator' && (
             <RippleSimulatorView
               nodes={nodes}
-              links={links}
-              initialNodeId={selectedNode?.id || 'dep-follow-redirects'}
-              onNavigateToMitigation={handleNavigateToMitigation}
+              selectedNode={selectedNode}
               onSelectNode={handleSelectNode}
+              onNavigateToMitigation={handleNavigateToMitigation}
             />
           )}
 
           {activeView === 'mitigation-center' && (
             <MitigationCenterView
+              nodes={nodes}
+              ecosystemRiskScore={ecosystemRiskScore}
+              isMitigated={isMitigated}
               onApplyMitigation={handleApplyMitigation}
-              onNavigateToGraph={() => setActiveView('graph')}
+              onResetMitigation={handleResetMitigation}
+              onSelectNode={handleSelectNode}
             />
           )}
 
-          {activeView === 'reports' && <ReportsView />}
+          {activeView === 'reports' && (
+            <ReportsView
+              stats={currentStats}
+              nodes={nodes}
+            />
+          )}
 
-          {activeView === 'settings' && <SettingsView />}
+          {activeView === 'settings' && (
+            <SettingsView />
+          )}
         </main>
       </div>
 

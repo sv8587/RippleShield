@@ -1,40 +1,49 @@
 import React, { useState } from 'react';
+import { GraphNode } from '../types';
 import { MITIGATION_OPTIONS_FOLLOW_REDIRECTS } from '../data/mockDataset';
-import { MitigationOption } from '../types';
-import { RiskBadge } from '../components/common/RiskBadge';
-import { 
-  Wrench, 
-  CheckCircle2, 
-  Sparkles, 
-  Copy, 
-  Check, 
-  ArrowRight, 
-  ShieldCheck, 
-  GitPullRequest, 
-  TrendingDown, 
-  FileCode,
+import {
+  Wrench,
+  CheckCircle2,
+  RotateCcw,
+  Sparkles,
+  ArrowRight,
   Zap,
-  RotateCcw
+  GitPullRequest,
+  Check,
+  Copy,
+  Layers,
+  ShieldAlert
 } from 'lucide-react';
+import { RiskBadge } from '../components/common/RiskBadge';
 
 interface MitigationCenterViewProps {
+  nodes?: GraphNode[];
+  ecosystemRiskScore?: number;
+  isMitigated?: boolean;
   onApplyMitigation?: (newRiskScore: number) => void;
+  onResetMitigation?: () => void;
+  onSelectNode?: (node: GraphNode) => void;
   onNavigateToGraph?: () => void;
 }
 
 export const MitigationCenterView: React.FC<MitigationCenterViewProps> = ({
+  nodes,
+  ecosystemRiskScore = 92,
+  isMitigated = false,
   onApplyMitigation,
+  onResetMitigation,
+  onSelectNode,
   onNavigateToGraph,
 }) => {
   const [selectedOptionId, setSelectedOptionId] = useState<string>('opt-a');
-  const [appliedOptionId, setAppliedOptionId] = useState<string | null>(null);
+  const [appliedOptionId, setAppliedOptionId] = useState<string | null>(isMitigated ? 'opt-a' : null);
   const [copied, setCopied] = useState(false);
 
-  const selectedOption = 
-    MITIGATION_OPTIONS_FOLLOW_REDIRECTS.find((opt) => opt.id === selectedOptionId) ||
+  const selectedOption =
+    MITIGATION_OPTIONS_FOLLOW_REDIRECTS.find((o) => o.id === selectedOptionId) ||
     MITIGATION_OPTIONS_FOLLOW_REDIRECTS[0];
 
-  const handleApply = (opt: MitigationOption) => {
+  const handleApply = (opt: typeof selectedOption) => {
     setAppliedOptionId(opt.id);
     if (onApplyMitigation) {
       onApplyMitigation(opt.projectedRisk);
@@ -43,7 +52,9 @@ export const MitigationCenterView: React.FC<MitigationCenterViewProps> = ({
 
   const handleReset = () => {
     setAppliedOptionId(null);
-    if (onApplyMitigation) {
+    if (onResetMitigation) {
+      onResetMitigation();
+    } else if (onApplyMitigation) {
       onApplyMitigation(92);
     }
   };
@@ -55,30 +66,30 @@ export const MitigationCenterView: React.FC<MitigationCenterViewProps> = ({
   };
 
   return (
-    <div className="space-y-6 pb-8">
+    <div className="space-y-4 sm:space-y-6 pb-8">
       {/* Top Banner Context */}
-      <div className="p-4 rounded-lg bg-[#111925] border border-[#263244] flex flex-wrap items-center justify-between gap-4">
+      <div className="p-3.5 sm:p-4 rounded-lg bg-[#111925] border border-[#263244] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-100 font-display flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-slate-100 font-display flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
               MINIMUM INTERVENTION OPTIMIZATION
             </h2>
-            <span className="px-2 py-0.5 rounded bg-cyan-950/60 border border-cyan-500/40 text-[10px] font-mono text-cyan-300 font-bold">
+            <span className="px-2 py-0.5 rounded bg-cyan-950/60 border border-cyan-500/40 text-[9px] sm:text-[10px] font-mono text-cyan-300 font-bold">
               Break the Chain
             </span>
           </div>
-          <p className="text-xs text-slate-300 mt-1">
+          <p className="text-[11px] sm:text-xs text-slate-300 mt-1">
             Find the smallest code or configuration change that achieves the largest downstream consequence reduction across your dependency tree.
           </p>
         </div>
 
         {/* Global Risk Header indicator */}
-        <div className="flex items-center gap-4 bg-[#0B111A] border border-[#263244] p-2.5 rounded-lg font-mono text-xs">
+        <div className="w-full sm:w-auto flex items-center justify-between sm:justify-start gap-4 bg-[#0B111A] border border-[#263244] p-2.5 rounded-lg font-mono text-xs">
           <div>
-            <span className="text-slate-400 text-[10px] uppercase block">CURRENT ECOSYSTEM RISK</span>
+            <span className="text-slate-400 text-[9px] sm:text-[10px] uppercase block">CURRENT ECOSYSTEM RISK</span>
             <span className={`text-xl font-bold ${appliedOptionId ? 'text-emerald-400' : 'text-red-400'}`}>
-              {appliedOptionId ? selectedOption.projectedRisk : 92}
+              {appliedOptionId ? selectedOption.projectedRisk : ecosystemRiskScore}
               <span className="text-xs text-slate-400 font-normal"> / 100</span>
             </span>
           </div>
@@ -99,48 +110,48 @@ export const MitigationCenterView: React.FC<MitigationCenterViewProps> = ({
       </div>
 
       {/* Recommended Intervention Banner Callout */}
-      <div className="p-5 rounded-lg bg-gradient-to-r from-blue-950/30 to-[#111925] border border-cyan-500/40 relative overflow-hidden shadow-lg">
-        <div className="flex items-start justify-between gap-4">
-          <div className="space-y-2">
+      <div className="p-4 sm:p-5 rounded-lg bg-gradient-to-r from-blue-950/30 to-[#111925] border border-cyan-500/40 relative overflow-hidden shadow-lg">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+          <div className="space-y-1.5 sm:space-y-2">
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 text-[10px] font-mono font-bold tracking-wider uppercase flex items-center gap-1">
+              <span className="px-2 py-0.5 rounded bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 text-[9px] sm:text-[10px] font-mono font-bold tracking-wider uppercase flex items-center gap-1">
                 <Sparkles className="w-3 h-3 text-cyan-400" />
                 Recommended Intervention
               </span>
               <RiskBadge level="IMMEDIATE" size="sm" />
             </div>
 
-            <h3 className="text-base font-bold text-slate-100 font-display">
+            <h3 className="text-sm sm:text-base font-bold text-slate-100 font-display">
               Option A: Patch follow-redirects to v1.15.11
             </h3>
 
             <p className="text-xs text-slate-300 leading-relaxed max-w-2xl">
-              <strong className="text-cyan-300">Why recommended:</strong> Recommended because one single dependency upgrade removes 6 downstream exposure paths while requiring changes to only one package.
+              <strong className="text-cyan-300">Why recommended:</strong> Removes 6 downstream exposure paths while requiring changes to only one package.
             </p>
           </div>
 
-          <div className="text-right shrink-0 font-mono">
+          <div className="text-left sm:text-right shrink-0 font-mono bg-[#0B111A]/80 sm:bg-transparent p-2.5 sm:p-0 rounded border border-[#263244] sm:border-0 w-full sm:w-auto">
             <span className="text-[10px] text-slate-400 uppercase tracking-wider block">Risk Reduction</span>
-            <span className="text-3xl font-bold text-emerald-400">66%</span>
+            <span className="text-2xl sm:text-3xl font-bold text-emerald-400">66%</span>
             <span className="text-[10px] text-slate-400 block mt-0.5">92 → 31 Exposure</span>
           </div>
         </div>
 
         {/* Visual Bar Before vs After Comparison */}
-        <div className="mt-4 pt-4 border-t border-[#263244]/80 space-y-2 font-mono text-xs">
-          <div className="flex items-center justify-between text-slate-400 text-[11px]">
+        <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-[#263244]/80 space-y-2 font-mono text-xs">
+          <div className="flex items-center justify-between text-slate-400 text-[10px] sm:text-[11px]">
             <span>RISK BEFORE INTERVENTION:</span>
             <span className="text-red-400 font-bold">92 / 100 (HIGH EXPOSURE)</span>
           </div>
-          <div className="w-full h-3 bg-[#0B111A] rounded-full overflow-hidden border border-[#263244]">
+          <div className="w-full h-2.5 sm:h-3 bg-[#0B111A] rounded-full overflow-hidden border border-[#263244]">
             <div className="h-full bg-red-500 rounded-full" style={{ width: '92%' }} />
           </div>
 
-          <div className="flex items-center justify-between text-slate-400 text-[11px] pt-1">
+          <div className="flex items-center justify-between text-slate-400 text-[10px] sm:text-[11px] pt-1">
             <span>RISK AFTER RECOMMENDED INTERVENTION:</span>
             <span className="text-emerald-400 font-bold">31 / 100 (-66% REDUCTION)</span>
           </div>
-          <div className="w-full h-3 bg-[#0B111A] rounded-full overflow-hidden border border-[#263244]">
+          <div className="w-full h-2.5 sm:h-3 bg-[#0B111A] rounded-full overflow-hidden border border-[#263244]">
             <div className="h-full bg-emerald-500 rounded-full transition-all duration-700" style={{ width: '31%' }} />
           </div>
         </div>
@@ -152,7 +163,7 @@ export const MitigationCenterView: React.FC<MitigationCenterViewProps> = ({
           Evaluated Intervention Options ({MITIGATION_OPTIONS_FOLLOW_REDIRECTS.length})
         </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
           {MITIGATION_OPTIONS_FOLLOW_REDIRECTS.map((opt) => {
             const isSelected = selectedOptionId === opt.id;
             const isApplied = appliedOptionId === opt.id;
@@ -161,11 +172,10 @@ export const MitigationCenterView: React.FC<MitigationCenterViewProps> = ({
               <div
                 key={opt.id}
                 onClick={() => setSelectedOptionId(opt.id)}
-                className={`p-4 rounded-lg border transition-all cursor-pointer flex flex-col justify-between ${
-                  isSelected
+                className={`p-3.5 sm:p-4 rounded-lg border transition-all cursor-pointer flex flex-col justify-between ${isSelected
                     ? 'bg-[#151E2B] border-cyan-400 shadow-lg shadow-cyan-500/10'
                     : 'bg-[#111925] border-[#263244] hover:border-slate-500'
-                }`}
+                  }`}
               >
                 <div>
                   <div className="flex items-center justify-between mb-2">
@@ -186,7 +196,7 @@ export const MitigationCenterView: React.FC<MitigationCenterViewProps> = ({
                     </div>
                     <div className="flex items-center justify-between text-slate-400">
                       <span>Services protected:</span>
-                      <strong className="text-cyan-300">{opt.servicesProtected} applications</strong>
+                      <strong className="text-cyan-300">{opt.servicesProtected} apps</strong>
                     </div>
                     <div className="flex items-center justify-between text-slate-400">
                       <span>Risk transition:</span>
@@ -211,13 +221,12 @@ export const MitigationCenterView: React.FC<MitigationCenterViewProps> = ({
                       e.stopPropagation();
                       handleApply(opt);
                     }}
-                    className={`w-full py-1.5 px-3 rounded text-xs font-mono font-semibold transition-all flex items-center justify-center gap-1.5 ${
-                      isApplied
+                    className={`w-full py-1.5 px-3 rounded text-xs font-mono font-semibold transition-all flex items-center justify-center gap-1.5 ${isApplied
                         ? 'bg-emerald-600 text-white shadow'
                         : opt.isRecommended
-                        ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
-                        : 'bg-[#192333] hover:bg-[#202c40] text-slate-200 border border-[#263244]'
-                    }`}
+                          ? 'bg-cyan-600 hover:bg-cyan-500 text-white'
+                          : 'bg-[#192333] hover:bg-[#202c40] text-slate-200 border border-[#263244]'
+                      }`}
                   >
                     {isApplied ? (
                       <>
@@ -239,30 +248,30 @@ export const MitigationCenterView: React.FC<MitigationCenterViewProps> = ({
       </div>
 
       {/* Selected Option Execution Manifest & Terminal Snippet */}
-      <div className="p-5 rounded-lg bg-[#111925] border border-[#263244] space-y-3">
-        <div className="flex items-center justify-between">
+      <div className="p-4 sm:p-5 rounded-lg bg-[#111925] border border-[#263244] space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
           <div className="flex items-center gap-2">
-            <GitPullRequest className="w-4 h-4 text-cyan-400" />
-            <h4 className="text-xs font-mono uppercase tracking-wider text-slate-200 font-semibold">
-              Intervention Implementation Snippet ({selectedOption.targetPackage})
+            <GitPullRequest className="w-4 h-4 text-cyan-400 shrink-0" />
+            <h4 className="text-xs font-mono uppercase tracking-wider text-slate-200 font-semibold truncate">
+              Intervention Implementation ({selectedOption.targetPackage})
             </h4>
           </div>
 
           <button
             onClick={() => handleCopyCode(selectedOption.pullRequestSnippet)}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#0B111A] hover:bg-[#192333] border border-[#263244] text-[11px] font-mono text-cyan-300 transition-colors"
+            className="w-full sm:w-auto justify-center flex items-center gap-1.5 px-2.5 py-1.5 rounded bg-[#0B111A] hover:bg-[#192333] border border-[#263244] text-[11px] font-mono text-cyan-300 transition-colors"
           >
             {copied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
             <span>{copied ? 'Copied to Clipboard' : 'Copy Lockfile Directive'}</span>
           </button>
         </div>
 
-        <pre className="p-3.5 rounded bg-[#070B12] border border-[#263244] font-mono text-xs text-slate-300 overflow-x-auto">
+        <pre className="p-3 sm:p-3.5 rounded bg-[#070B12] border border-[#263244] font-mono text-xs text-slate-300 overflow-x-auto touch-pan-x">
           <code>{selectedOption.pullRequestSnippet}</code>
         </pre>
 
-        <div className="flex items-center justify-between text-xs text-slate-400 pt-1">
-          <span>Apply this directive to your root <code className="text-slate-200 font-mono">package.json</code> or resolution lockfile.</span>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs text-slate-400 pt-1">
+          <span>Apply directive to root <code className="text-slate-200 font-mono">package.json</code> or lockfile.</span>
           {onNavigateToGraph && (
             <button
               onClick={onNavigateToGraph}

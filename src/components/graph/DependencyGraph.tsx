@@ -1,14 +1,14 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { GraphNode, GraphLink, RiskLevel, NodeType } from '../../types';
-import { 
-  ZoomIn, 
-  ZoomOut, 
-  Maximize2, 
-  RotateCcw, 
-  Search, 
-  Filter, 
-  ShieldAlert, 
-  Layers, 
+import {
+  ZoomIn,
+  ZoomOut,
+  Maximize2,
+  RotateCcw,
+  Search,
+  Filter,
+  ShieldAlert,
+  Layers,
   Sparkles,
   Play,
   ArrowRight,
@@ -204,6 +204,27 @@ export const DependencyGraph: React.FC<DependencyGraphProps> = ({
   const handleMouseUp = () => {
     setIsDragging(false);
   };
+  // Touch pan handlers for mobile screens
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if ((e.target as HTMLElement).closest('.graph-node') || (e.target as HTMLElement).closest('.graph-control')) return;
+    if (e.touches.length === 1) {
+      setIsDragging(true);
+      setDragStart({ x: e.touches[0].clientX - transform.x, y: e.touches[0].clientY - transform.y });
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging || e.touches.length !== 1) return;
+    setTransform((prev) => ({
+      ...prev,
+      x: e.touches[0].clientX - dragStart.x,
+      y: e.touches[0].clientY - dragStart.y,
+    }));
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+  };
 
   const handleWheel = (e: React.WheelEvent) => {
     e.preventDefault();
@@ -227,7 +248,7 @@ export const DependencyGraph: React.FC<DependencyGraphProps> = ({
   };
 
   return (
-    <div 
+    <div
       ref={containerRef}
       id="dependency-network-container"
       className="relative w-full rounded-lg bg-[#070B12] border border-[#263244] overflow-hidden cyber-grid select-none"
@@ -261,11 +282,10 @@ export const DependencyGraph: React.FC<DependencyGraphProps> = ({
                 <button
                   key={filter}
                   onClick={() => setActiveFilter(filter)}
-                  className={`text-[10px] font-mono px-2 py-1 rounded transition-colors ${
-                    activeFilter === filter
+                  className={`text-[10px] font-mono px-2 py-1 rounded transition-colors ${activeFilter === filter
                       ? 'bg-blue-600 text-white font-semibold shadow'
                       : 'text-slate-400 hover:text-slate-200 hover:bg-[#192333]'
-                  }`}
+                    }`}
                 >
                   {filter}
                 </button>
@@ -279,11 +299,10 @@ export const DependencyGraph: React.FC<DependencyGraphProps> = ({
             <div className="flex items-center bg-[#111925]/90 border border-[#263244] p-1 rounded-lg backdrop-blur-md">
               <button
                 onClick={() => setTraceDirection('downstream')}
-                className={`text-[10px] font-mono px-2.5 py-1 rounded transition-colors flex items-center gap-1 ${
-                  traceDirection === 'downstream'
+                className={`text-[10px] font-mono px-2.5 py-1 rounded transition-colors flex items-center gap-1 ${traceDirection === 'downstream'
                     ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-semibold'
                     : 'text-slate-400 hover:text-slate-200'
-                }`}
+                  }`}
                 title="Highlight Downstream Blast Radius Impact"
               >
                 <ArrowRight className="w-3 h-3" />
@@ -291,11 +310,10 @@ export const DependencyGraph: React.FC<DependencyGraphProps> = ({
               </button>
               <button
                 onClick={() => setTraceDirection('upstream')}
-                className={`text-[10px] font-mono px-2.5 py-1 rounded transition-colors flex items-center gap-1 ${
-                  traceDirection === 'upstream'
+                className={`text-[10px] font-mono px-2.5 py-1 rounded transition-colors flex items-center gap-1 ${traceDirection === 'upstream'
                     ? 'bg-blue-500/20 text-blue-300 border border-blue-500/40 font-semibold'
                     : 'text-slate-400 hover:text-slate-200'
-                }`}
+                  }`}
                 title="Highlight Upstream Root Dependencies"
               >
                 <GitFork className="w-3 h-3 rotate-180" />
@@ -506,12 +524,12 @@ export const DependencyGraph: React.FC<DependencyGraphProps> = ({
               const isDimmed = activeFocusId && !isConnected && !isSimAffected;
 
               // Node size correlates with downstream reach
-              const baseRadius = 
-                node.type === 'application' 
-                  ? 24 
-                  : node.type === 'service' 
-                  ? 20 
-                  : Math.max(14, Math.min(22, 12 + node.dependentsCount * 0.5));
+              const baseRadius =
+                node.type === 'application'
+                  ? 24
+                  : node.type === 'service'
+                    ? 20
+                    : Math.max(14, Math.min(22, 12 + node.dependentsCount * 0.5));
 
               const colors = getNodeColor(node.risk);
 
